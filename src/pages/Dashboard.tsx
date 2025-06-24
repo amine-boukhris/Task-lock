@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
-import { useEffect, useState, type ChangeEvent } from "react";
-import { useNavigate } from "react-router";
-import { Plus } from "lucide-react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { Play, Plus } from "lucide-react";
 import {
   Dialog,
   DialogClose,
@@ -16,36 +15,43 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-
-type User = {
-  id?: string;
-  email?: string;
-};
-
-type NewTask = {
-  title: string;
-  duration: number;
-};
-
-type TaskStatus = "pending" | "in_progress" | "completed" | "cancelled";
-
-type Task = {
-  id: string;
-  title: string;
-  duration: number;
-  status: TaskStatus;
-  created_at: Date;
-};
+import { useAuth } from "@/AuthContext";
+import type { NewTask, Task } from "@/types";
+import { Navigate } from "react-router";
+import { ModeToggle } from "@/components/mode-toggle";
+import CircularProgress from "@/components/CircularProgress";
+import AddTask from "@/components/AddTask";
 
 function Dashboard() {
-  const navigate = useNavigate();
-
-  const [user, setUser] = useState<User>();
-  const [newTask, setNewTask] = useState<NewTask>({
-    title: "",
-    duration: 25,
-  });
+  const { user, loading } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [currentTask, setCurrentTask] = useState<Task | null>(null);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null); // For cleanup of intervals
+  const startTime = useRef<number | null>(null);
+
+  const stopStopwatch = () => {
+    setIsRunning(false);
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+    }
+  };
+
+  const resetStopwatch = async () => {
+    await updateTable(table.id, {
+      ...table,
+      totalAmount: table.totalAmount + amountToPay,
+    });
+    setTotalAmount(table.totalAmount + amountToPay);
+    setIsRunning(false);
+    setTime(0);
+    setAmountToPay(0);
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+    }
+    saveSession();
+    startTimeRef.current = null;
+  };
 
   const getTasks = async () => {
     const { data, error } = await supabase
@@ -53,65 +59,61 @@ function Dashboard() {
       .select("id,title,duration,status,created_at");
 
     if (error) {
-      toast("Error fetching tasks")
-      return
+      toast("Error fetching tasks");
+      return;
     }
 
     if (!data) {
       return;
     }
 
-    setTasks((prev) => prev.concat(data));
+    setTasks(data);
+    if (data[0]) {
+      setCurrentTask(data[0]);
+      setTimeLeft(data[0].duration);
+    }
   };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data } = await supabase.auth.getUser();
-
-      if (!data.user?.email) {
-        navigate("/login");
-      }
-
-      setUser({ id: data.user?.id, email: data.user?.email });
-    };
-
-    fetchUser();
     getTasks();
   }, []);
 
-  const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setNewTask((prev) => ({ ...prev, title: e.target.value }));
-  };
-
-  const handleDurationChannge = (e: ChangeEvent<HTMLInputElement>) => {
-    setNewTask((prev) => ({ ...prev, duration: parseInt(e.target.value) }));
-  };
-
-  const addTask = async (newTask: NewTask) => {
-    if (!newTask.title || !newTask.duration) {
-      toast("Both task title and duration are required!");
+  const startTimer = () => {
+    if (!currentTask || !timeLeft) {
+      toast("Please select a task");
       return;
     }
 
-    const { data, error } = await supabase
-      .from("tasks")
-      .insert([
-        { title: newTask.title, duration: newTask.duration, user_id: user?.id },
-      ])
-      .select();
+    startTime.current = performance.now(); // in milliseconds
+    const startingTimeLeft = timeLeft; // in seconds
 
-    console.log(data, error);
+    intervalRef.current = setInterval(() => {
+      const elapsed = Math.floor(
+        (performance.now() - startTime.current!) / 1000
+      ); // in seconds
+      const newTimeLeft = startingTimeLeft - elapsed;
+
+      if (newTimeLeft <= 0) {
+        clearInterval(intervalRef.current!);
+        toast("Task completed!");
+      } else {
+        setTimeLeft(newTimeLeft);
+      }
+    }, 1000);
   };
 
-  if (!user?.email) {
-    return <div>wait</div>;
+  if (loading) {
+    return <div>loading...</div>;
   }
+
+  if (!user) return <Navigate to={"/login"} />;
 
   return (
     <div className="min-h-dvh">
       <div className="border-b">
-        <div className="container mx-auto py-3 px-4">
+        <div className="container mx-auto py-3 px-4 flex justify-between">
           <h1 className="font-bold text-2xl">FocusLock</h1>
+          <ModeToggle />
         </div>
       </div>
       <div>
@@ -120,67 +122,53 @@ function Dashboard() {
             <div>
               <p className="opacity-70">{new Date().toDateString()}</p>
               <h2 className="font-semibold text-xl">Total Focus: 3h 42m</h2>
+              <p>{user.email}</p>
             </div>
             <div>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    size={"lg"}
-                    className="text-lg cursor-pointer"
-                  >
-                    <Plus />
-                    New Task
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add a new task</DialogTitle>
-                    <DialogDescription>
-                      Enter the task title and task duration in minutes
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4">
-                    <div className="grid gap-3">
-                      <Label htmlFor="task-title">Task title</Label>
-                      <Input
-                        id="task-title"
-                        name="taskTitle"
-                        value={newTask.title}
-                        onChange={handleTitleChange}
-                        required
-                      />
-                    </div>
-                    <div className="grid gap-3">
-                      <Label htmlFor="duration">Duration</Label>
-                      <Input
-                        id="duration"
-                        name="duration"
-                        value={newTask.duration}
-                        onChange={handleDurationChannge}
-                        type="number"
-                        min={1}
-                        max={1440}
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button variant="outline">Cancel</Button>
-                    </DialogClose>
-                    <Button onClick={() => addTask(newTask)}>
-                      Save changes
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              <AddTask user={user} setTasks={setTasks} />
             </div>
           </div>
         </div>
-        <div className="container mx-auto border border-blue-500">
-          {tasks.map(task => (
-            <div key={task.id}>{task.title}</div>
-          ))}
+        <div className="container mx-auto grid grid-cols-1 gap-2 md:grid-cols-2">
+          <div className="bg-secondary flex flex-col gap-8 items-center justify-center px-2 py-8">
+            <div>{currentTask ? currentTask.title : "Select a task"}</div>
+            <CircularProgress
+              progress={70}
+              timerLabel={`${Math.floor(timeLeft! / 60)}:${
+                timeLeft! % 60 < 10 ? "0" + (timeLeft! % 60) : timeLeft! % 60
+              }`}
+              size={320}
+            />
+            <Button
+              variant={"outline"}
+              size={"lg"}
+              className="text-lg cursor-pointer"
+              onClick={startTimer}
+            >
+              <Play />
+              Start
+            </Button>
+          </div>
+          <div className="space-y-2">
+            <div className="mx-4 mb-4 space-y-1">
+              <h1 className=" text-2xl font-semibold">My tasks</h1>
+              {!tasks && <p>you don't have any tasks</p>}
+            </div>
+            {tasks.map((task) => (
+              <div
+                key={task.id}
+                className="bg-secondary p-2 cursor-pointer hover:scale-105 hover:outline transition-all"
+                onClick={() => setCurrentTask(task)}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="border-2 bg-background rounded-full size-10 flex justify-center items-center">
+                    {task.duration}
+                  </div>
+                  <div className="text-xl flex-1">{task.title}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
