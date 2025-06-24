@@ -61,7 +61,12 @@ export default function AddTask({
     const { data, error } = await supabase
       .from("tasks")
       .insert([
-        { title: newTask.title, duration: newTask.duration, user_id: user?.id },
+        {
+          title: newTask.title,
+          duration: newTask.duration * 60,
+          time_left: newTask.duration * 60,
+          user_id: user?.id,
+        },
       ])
       .select();
 

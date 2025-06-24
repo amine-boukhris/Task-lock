@@ -1,7 +1,7 @@
 export type User = {
   id?: string;
   email?: string;
-}
+};
 
 export type NewTask = {
   title: string;
@@ -14,6 +14,13 @@ export type Task = {
   id: string;
   title: string;
   duration: number;
+  time_left: number;
   status: TaskStatus;
   created_at: Date;
+};
+
+export type FocusTotal = {
+  id: string;
+  focus_time: number;
+  last_updated: Date;
 };
