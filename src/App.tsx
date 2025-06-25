@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthContextProvider } from "./AuthContext";
+import Landing from "./pages/Landing";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/" element={<Landing />} />
           </Routes>
         </AuthContextProvider>
       </BrowserRouter>
