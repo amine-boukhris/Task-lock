@@ -7,7 +7,7 @@ const FEATURES = [
 
 export default function Features() {
   return (
-    <section className="grid grid-cols-3 grid-rows-2 text-gray-100">
+    <section className="grid grid-cols-3 grid-rows-2 text-gray-100 bg-gray-950">
       <div className="">animation here</div>
       {FEATURES.map((feature, index) => (
         <Feature key={index} icon={feature.icon} title={feature.title} />

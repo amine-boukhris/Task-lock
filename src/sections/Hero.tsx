@@ -19,7 +19,7 @@ export default function Hero() {
 
 
   return (
-    <section ref={heroRef} className="bg-gray-950 h-[200vh] relative ">
+    <section ref={heroRef} className="bg-gray-950 h-[200vh] relative" id="hero">
       <div className="sticky top-0 flex flex-col justify-center items-center gap-6 text-gray-100 h-screen">
         <h1 className="text-6xl uppercase font-bold text-center">
           Lock In
