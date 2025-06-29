@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ChevronsUp } from "lucide-react";
 import FocusLockLogo from "@/components/FocusLockLogo";
-import { redirect, useNavigate } from "react-router";
 
 const LINKS = [
   {

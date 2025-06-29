@@ -9,6 +9,7 @@ import Features from "@/sections/Features";
 import HowItWorks from "@/sections/HowItWorks";
 import TechStack from "@/sections/TechStack";
 import Footer from "@/sections/Footer";
+import HorizontalScrollSection from "@/sections/HorizontalScrollSection";
 
 export default function Landing() {
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function Landing() {
       <Nav />
       <PreHero />
       <Hero />
+      <HorizontalScrollSection />
       <Features />
       <HowItWorks />
       <TechStack />
