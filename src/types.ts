@@ -3,11 +3,6 @@ export type User = {
   email?: string;
 };
 
-export type NewTask = {
-  title: string;
-  duration: number;
-};
-
 export type TaskStatus = "pending" | "in_progress" | "completed" | "cancelled";
 
 export type Task = {
@@ -19,8 +14,20 @@ export type Task = {
   created_at: Date;
 };
 
-export type FocusTotal = {
+export type NewTask = Pick<Task, "title" | "duration">;
+
+export type TaskUpdate = Omit<Partial<Task>, "id" | "created_at">;
+
+export type FocusTime = {
   id: string;
-  focus_time: number;
-  last_updated: Date;
+  user_id: string;
+  time: number;
+  date: Date;
 };
+
+export type NewFocusTime = Omit<Partial<FocusTime>, "id" | "user_id">;
+
+export type FocusTimeUpdate = Omit<
+  Partial<FocusTime>,
+  "id" | "user_id" | "date"
+>;

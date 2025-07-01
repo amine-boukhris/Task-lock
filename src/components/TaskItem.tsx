@@ -1,28 +1,57 @@
+import { EllipsisVertical } from "lucide-react";
 import type { Task } from "@/types";
-import { Trash } from "lucide-react";
-import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { secondsToMM } from "@/lib/utils";
+import { useDeleteTask, useUpdateTask } from "@/hooks/useTasks";
 
-interface TaskProps {
-  onTaskClick: (task: Task) => void;
-  task: Task;
-  deleteTask: (e: React.MouseEvent<HTMLButtonElement, MouseEvent> ,task: Task) => void;
-}
+export default function TaskItem({ task }: { task: Task }) {
+  const updateTaskMutation = useUpdateTask();
+  const deleteTaskMutation = useDeleteTask();
 
-export default function Task({ onTaskClick, task, deleteTask }: TaskProps) {
+  function cancelTask() {
+    updateTaskMutation.mutate({ id: task.id, data: { status: "cancelled" } });
+  }
+  function deleteTask() {
+    deleteTaskMutation.mutate(task.id);
+  }
+  function resetTask() {
+    updateTaskMutation.mutate({
+      id: task.id,
+      data: { time_left: task.duration, status: "pending" },
+    });
+  }
+
   return (
     <div
-      className="bg-secondary p-2 cursor-pointer hover:scale-[1.02] hover:bg-background hover:outline transition-all"
-      onClick={() => onTaskClick(task)}
+      onClick={() => console.log(task.id, task.title, "clicked")}
+      className="flex items-center gap-3 px-2 py-3 border-2 border-neutral-600 text-neutral-800 rounded-xl shadow-md"
     >
-      <div className="flex items-center gap-2">
-        <div className="border-2 bg-background rounded-full size-10 flex justify-center items-center">
-          {Math.ceil(task.time_left / 60)}
-        </div>
-        <div className="text-xl flex-1">{task.title}</div>
-        <Button variant={'outline'} className="rounded-full size-10 cursor-pointer" onClick={(e) => deleteTask(e, task)}>
-          <Trash />
-        </Button>
+      <div className="border-2 border-neutral-600  rounded-xl px-2 py-1 aspect-square flex justify-center items-center">
+        {secondsToMM(task.time_left)}
       </div>
+      <div className="flex-1 space-x-1">
+        <p className=" inline text-base">{task.title}</p>
+        <span className="text-neutral-500 text-xs">
+          {secondsToMM(task.duration)}
+        </span>
+      </div>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger className="outline-none">
+          <EllipsisVertical className="p-0.5 cursor-pointer size-6" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Edit</DropdownMenuItem>
+          <DropdownMenuItem onClick={cancelTask}>Cancel</DropdownMenuItem>
+          <DropdownMenuItem onClick={deleteTask}>Delete</DropdownMenuItem>
+          <DropdownMenuItem onClick={resetTask}>Reset</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

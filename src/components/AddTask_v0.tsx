@@ -42,13 +42,6 @@ export default function AddTask({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTask((prev) => ({ ...prev, title: e.target.value }));
-  };
-
-  const handleDurationChannge = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTask((prev) => ({ ...prev, duration: parseInt(e.target.value) }));
-  };
 
   const addTask = async (newTask: NewTask) => {
     if (!newTask.title || !newTask.duration) {

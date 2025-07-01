@@ -7,9 +7,10 @@ import { useAuth } from "@/AuthContext";
 import type { FocusTotal, Task, TaskStatus } from "@/types";
 import { Navigate } from "react-router";
 import CircularProgress from "@/components/CircularProgress";
-import AddTask from "@/components/AddTask";
+import AddTask from "@/components/AddTask_v0";
 import Header from "@/layout/Header";
 import TaskItem from "@/components/TaskItem";
+import { secondsToHHMMSS } from "@/lib/utils";
 
 function Dashboard() {
   const { user, loading } = useAuth();
@@ -283,20 +284,7 @@ function Dashboard() {
             <div>
               <p className="opacity-70">{new Date().toDateString()}</p>
               <h2 className="font-semibold text-xl">
-                Total Focus:{" "}
-                {`${
-                  Math.floor(focusTotal?.focus_time! / 3600) < 10
-                    ? "0" + Math.floor(focusTotal?.focus_time! / 3600)
-                    : Math.floor(focusTotal?.focus_time! / 3600)
-                }:${
-                  Math.floor(focusTotal?.focus_time! / 60) < 10
-                    ? "0" + Math.floor(focusTotal?.focus_time! / 60)
-                    : Math.floor(focusTotal?.focus_time! / 60)
-                }:${
-                  focusTotal?.focus_time! % 60 < 10
-                    ? "0" + (focusTotal?.focus_time! % 60)
-                    : focusTotal?.focus_time! % 60
-                }`}
+                Total Focus: {secondsToHHMMSS(focusTotal.focus_time)}
               </h2>
               <p>{user.email}</p>
             </div>
@@ -342,59 +330,7 @@ function Dashboard() {
             )}
           </div>
           {/* Tasks view section */}
-          <div className="space-y-8">
-            {/* pending and in progress tasks */}
-            <div className="space-y-2">
-              <div className="mx-4 mb-4 space-y-1">
-                <h1 className=" text-2xl font-semibold">My tasks</h1>
-                {!mainTasks.length && (
-                  <p>you don't have any pending or in progress tasks</p>
-                )}
-              </div>
-              {mainTasks.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onTaskClick={onTaskClick}
-                  deleteTask={deleteTask}
-                />
-              ))}
-            </div>
-            <hr className="w-full" />
-            {/* completed tasks */}
-            <div className="space-y-2">
-              <div className="mx-4 mb-4 space-y-1">
-                <h1 className=" text-2xl font-semibold">Completed</h1>
-                {!completedTasks.length && <p>you don't have any tasks</p>}
-              </div>
-              {completedTasks.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onTaskClick={onTaskClick}
-                  deleteTask={deleteTask}
-                />
-              ))}
-            </div>
-            <hr />
-            {/* Cancelled tasks */}
-            <div className="space-y-2">
-              <div className="mx-4 mb-4 space-y-1">
-                <h1 className=" text-2xl font-semibold">Cancelled</h1>
-                {!cancelledTasks.length && (
-                  <p>you don't have any cancelled tasks</p>
-                )}
-              </div>
-              {cancelledTasks.map((task) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  onTaskClick={onTaskClick}
-                  deleteTask={deleteTask}
-                />
-              ))}
-            </div>
-          </div>
+          <div className="space-y-8"></div>
         </div>
       </div>
     </div>

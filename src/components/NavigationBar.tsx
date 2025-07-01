@@ -1,6 +1,7 @@
 import { LayoutDashboard, Plus } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router";
+import AddTaskButton from "./AddTaskButton";
 
 export default function NavigationBar() {
   return (
@@ -9,13 +10,7 @@ export default function NavigationBar() {
         FocusLock
       </h1>
       <div className="flex items-center gap-3 text-neutral-900 ">
-        <Button
-          className="flex items-center justify-center cursor-pointer"
-          size={"lg"}
-        >
-          <Plus className="size-6 mx-px" />
-          Add task
-        </Button>
+        <AddTaskButton />
 
         <Button asChild variant={"outline"} size={"lg"}>
           <Link
