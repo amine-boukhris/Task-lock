@@ -9,7 +9,7 @@ export async function fetchFocusTimes(): Promise<FocusTime[]> {
   return focusTimes ?? [];
 }
 
-export async function fetchFocusTime(date: Date): Promise<FocusTime> {
+export async function fetchFocusTime(date: string): Promise<FocusTime> {
   const { data: focusTime, error } = await supabase
     .from("focus_times")
     .select("*")

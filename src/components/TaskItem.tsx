@@ -1,5 +1,5 @@
 import { EllipsisVertical } from "lucide-react";
-import type { Task } from "@/types";
+import type { Task, TaskUpdate } from "@/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,16 +9,31 @@ import {
 import { secondsToMM } from "@/lib/utils";
 import { useDeleteTask, useUpdateTask } from "@/hooks/useTasks";
 
-export default function TaskItem({ task }: { task: Task }) {
+interface TaskItemProps {
+  task: Task;
+  onClick?: (task: Task) => void;
+}
+
+export default function TaskItem({ task, onClick }: TaskItemProps) {
   const updateTaskMutation = useUpdateTask();
   const deleteTaskMutation = useDeleteTask();
 
-  function cancelTask() {
-    updateTaskMutation.mutate({ id: task.id, data: { status: "cancelled" } });
+  function handleCancelStatusChange() {
+    let data: TaskUpdate = {};
+    if (task.status != "cancelled") {
+      data.status = "cancelled";
+    } else {
+      if (task.time_left == task.duration) data.status = "pending";
+      else if (task.time_left == 0) data.status = "completed";
+      else data.status = "in_progress";
+    }
+    updateTaskMutation.mutate({ id: task.id, data });
   }
+
   function deleteTask() {
     deleteTaskMutation.mutate(task.id);
   }
+
   function resetTask() {
     updateTaskMutation.mutate({
       id: task.id,
@@ -28,7 +43,7 @@ export default function TaskItem({ task }: { task: Task }) {
 
   return (
     <div
-      onClick={() => console.log(task.id, task.title, "clicked")}
+      onClick={() => onClick && onClick(task)}
       className="flex items-center gap-3 px-2 py-3 border-2 border-neutral-600 text-neutral-800 rounded-xl shadow-md"
     >
       <div className="border-2 border-neutral-600  rounded-xl px-2 py-1 aspect-square flex justify-center items-center">
@@ -47,7 +62,9 @@ export default function TaskItem({ task }: { task: Task }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem onClick={cancelTask}>Cancel</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleCancelStatusChange}>
+            {task.status == "cancelled" ? "Uncancel" : "Cancel"}
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={deleteTask}>Delete</DropdownMenuItem>
           <DropdownMenuItem onClick={resetTask}>Reset</DropdownMenuItem>
         </DropdownMenuContent>

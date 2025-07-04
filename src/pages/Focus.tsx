@@ -1,8 +1,8 @@
 import NavigationBar from "@/components/NavigationBar";
-import PageProgressBar from "@/components/PageProgressBar";
+// import PageProgressBar from "@/components/PageProgressBar";
 import Tasks from "@/components/Tasks";
 import Timer from "@/components/Timer";
-import { useScroll } from "motion/react";
+// import { useScroll } from "motion/react";
 import grain from "@/assets/bright-squares.png";
 import { useEffect } from "react";
 import Lenis from "lenis";

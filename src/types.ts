@@ -22,12 +22,9 @@ export type FocusTime = {
   id: string;
   user_id: string;
   time: number;
-  date: Date;
+  date: string;
 };
 
-export type NewFocusTime = Omit<Partial<FocusTime>, "id" | "user_id">;
+export type NewFocusTime = Omit<FocusTime, "id">;
 
-export type FocusTimeUpdate = Omit<
-  Partial<FocusTime>,
-  "id" | "user_id" | "date"
->;
+export type FocusTimeUpdate = Pick<FocusTime, "time">;

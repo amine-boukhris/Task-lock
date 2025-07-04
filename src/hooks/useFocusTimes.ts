@@ -13,9 +13,9 @@ export function useFocusTimes() {
   });
 }
 
-export function useFocusTime(date: Date) {
+export function useFocusTime(date: string) {
   return useQuery({
-    queryKey: ["focusTimes", date],
+    queryKey: ["focusTime"],
     queryFn: () => fetchFocusTime(date),
   });
 }

@@ -28,3 +28,18 @@ export function secondsToHHMMSS(time: number) {
     (time % 3600) % 60 < 10 ? "0" + ((time % 3600) % 60) : (time % 3600) % 60
   }`;
 }
+
+export function isSameDay(d1: Date, d2: Date): boolean {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
+}
+
+export function formatDate(date: Date): string {
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
