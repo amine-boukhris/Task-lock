@@ -10,9 +10,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useLogin } from "@/hooks/useUser";
 import { supabase } from "@/lib/supabase";
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 function Login() {
   const navigate = useNavigate();
@@ -20,15 +22,20 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const loginMutation = useLogin();
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    let { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    if (!email || !password) {
+      toast("All fields are required");
+      return;
+    }
 
-    console.log(data, error);
+    loginMutation.mutate(
+      { email, password },
+      { onSuccess: () => navigate("/focus"), onError: () => toast("Something went wrong") }
+    );
   };
 
   return (
@@ -36,16 +43,14 @@ function Login() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
+          <CardDescription>Enter your email below to login to your account</CardDescription>
           <CardAction>
             <Button variant="link" onClick={() => navigate("/register")}>
               Sign Up
             </Button>
           </CardAction>
         </CardHeader>
-        <form onSubmit={onSubmit} className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <CardContent>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">

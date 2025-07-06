@@ -2,18 +2,31 @@ import { Link } from "react-router";
 import { LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FocusLockLogo from "./FocusLockLogo";
+import { useAuth } from "@/AuthContext";
+import { useLogout, useUser } from "@/hooks/useUser";
 
 export default function Nav() {
+  const {user} = useUser()
+  const logoutMutation = useLogout();
+
+  function handleLogout() {
+    logoutMutation.mutate();
+  }
+
   return (
     <nav className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-3 text-white bg-gray-900/40 backdrop-blur-sm">
       <FocusLockLogo />
       <div className="flex gap-2 items-center">
-        <Button asChild size={"sm"} variant={"ghost"}>
-          <Link to={"/login"}>Login</Link>
-        </Button>
-        <Button asChild size={"sm"} variant={"ghost"}>
-          <Link to={"/register"}>Sign up</Link>
-        </Button>
+        {user ? (
+          <Button asChild size={"sm"} variant={"ghost"} onClick={handleLogout}>
+            <Link to={"/login"}>Logout</Link>
+          </Button>
+        ) : (
+          <Button asChild size={"sm"} variant={"ghost"}>
+            <Link to={"/login"}>Login</Link>
+          </Button>
+        )}
+
         <Button asChild size={"sm"} variant={"ghost"}>
           <Link to={"/dashboard"}>
             <LayoutDashboard />

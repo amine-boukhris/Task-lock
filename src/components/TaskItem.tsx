@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { secondsToMM } from "@/lib/utils";
 import { useDeleteTask, useUpdateTask } from "@/hooks/useTasks";
+import { useTaskStore } from "@/store/taskTimerStore";
+import { toast } from "sonner";
 
 interface TaskItemProps {
   task: Task;
@@ -17,6 +19,7 @@ interface TaskItemProps {
 export default function TaskItem({ task, onClick }: TaskItemProps) {
   const updateTaskMutation = useUpdateTask();
   const deleteTaskMutation = useDeleteTask();
+  const { selectedTask, isRunning, setSelectedTask } = useTaskStore();
 
   function handleCancelStatusChange() {
     let data: TaskUpdate = {};
@@ -31,6 +34,16 @@ export default function TaskItem({ task, onClick }: TaskItemProps) {
   }
 
   function deleteTask() {
+    if (isRunning && selectedTask?.id == task.id) {
+      toast("Can't delete task. Task is running");
+      return;
+    }
+
+    if (selectedTask?.id == task.id) {
+      console.log('selectedTask?.id == task.id')
+      setSelectedTask(null);
+    }
+
     deleteTaskMutation.mutate(task.id);
   }
 
@@ -51,9 +64,7 @@ export default function TaskItem({ task, onClick }: TaskItemProps) {
       </div>
       <div className="flex-1 space-x-1">
         <p className=" inline text-base">{task.title}</p>
-        <span className="text-neutral-500 text-xs">
-          {secondsToMM(task.duration)}
-        </span>
+        <span className="text-neutral-500 text-xs">{secondsToMM(task.duration)}</span>
       </div>
 
       <DropdownMenu>

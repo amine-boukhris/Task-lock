@@ -14,11 +14,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
 });
 
-export const AuthContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -36,6 +32,8 @@ export const AuthContextProvider = ({
 
     getUser();
   }, []);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <AuthContext.Provider

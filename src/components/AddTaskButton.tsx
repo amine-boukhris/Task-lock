@@ -1,11 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
-import {
-  useEffect,
-  useState,
-  type ChangeEvent,
-  type SetStateAction,
-} from "react";
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import {
   Dialog,
@@ -19,34 +13,41 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { useAuth } from "@/AuthContext";
-import type { NewTask, Task } from "@/types";
-import { Navigate } from "react-router";
-import { ModeToggle } from "@/components/mode-toggle";
-import CircularProgress from "@/components/CircularProgress";
-import type { User } from "@supabase/supabase-js";
+import type { NewTask } from "@/types";
 import { useCreateTask } from "@/hooks/useTasks";
+import { useAuth } from "@/AuthContext";
 
 export default function AddTaskButton() {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
-  const [newTask, setNewTask] = useState<NewTask>({
+  const [newTask, setNewTask] = useState<Omit<NewTask, "user_id">>({
     title: "",
     duration: 25,
   });
 
   const createTaskMutation = useCreateTask();
   function submit() {
-    createTaskMutation.mutate(newTask);
+    if (!newTask.title || !newTask.duration) {
+      return;
+    }
+    createTaskMutation.mutate(
+      { user_id: user!.id, ...newTask },
+      {
+        onSuccess: () => {
+          setOpen(false);
+          setNewTask({
+            title: "",
+            duration: 25,
+          });
+        },
+      }
+    );
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          className="flex items-center justify-center cursor-pointer"
-          size={"lg"}
-        >
+        <Button className="flex items-center justify-center cursor-pointer" size={"lg"}>
           <Plus className="size-6 mx-px" />
           Add task
         </Button>
@@ -54,9 +55,7 @@ export default function AddTaskButton() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add a new task</DialogTitle>
-          <DialogDescription>
-            Enter the task title and task duration in minutes
-          </DialogDescription>
+          <DialogDescription>Enter the task title and task duration in minutes</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
           <div className="grid gap-3">
@@ -65,9 +64,7 @@ export default function AddTaskButton() {
               id="task-title"
               name="taskTitle"
               value={newTask.title}
-              onChange={(e) =>
-                setNewTask((prev) => ({ ...prev, title: e.target.value }))
-              }
+              onChange={(e) => setNewTask((prev) => ({ ...prev, title: e.target.value }))}
               required
             />
           </div>
@@ -88,12 +85,22 @@ export default function AddTaskButton() {
               max={1440}
             />
           </div>
-          {/* {error && <div>error message</div>} */}
+          {createTaskMutation.isError && <div>Something went wrong</div>}
         </div>
         <DialogFooter>
           <DialogClose asChild>
             {!createTaskMutation.isPending && (
-              <Button variant="outline">Cancel</Button>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setNewTask({
+                    title: "",
+                    duration: 25,
+                  })
+                }
+              >
+                Cancel
+              </Button>
             )}
           </DialogClose>
           <Button onClick={submit}>

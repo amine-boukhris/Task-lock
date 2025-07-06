@@ -10,21 +10,14 @@ export async function fetchTasks(): Promise<Task[]> {
 export async function createTask(task: NewTask) {
   const { data: created, error } = await supabase
     .from("tasks")
-    .insert(task)
+    .insert({ ...task, time_left: task.duration })
     .select()
     .single();
-
   if (error) throw error;
   return created;
 }
 
-export async function updateTask({
-  id,
-  data,
-}: {
-  id: string;
-  data: TaskUpdate;
-}) {
+export async function updateTask({ id, data }: { id: string; data: TaskUpdate }) {
   const { data: updated, error } = await supabase
     .from("tasks")
     .update(data)

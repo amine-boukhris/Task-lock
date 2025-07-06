@@ -2,35 +2,39 @@ import { useTaskStore } from "@/store/taskTimerStore";
 import { toast } from "sonner";
 import { useUpdateTask } from "./useTasks";
 import { useEffect, useRef, useState } from "react";
-import {
-  useCreateFocusTime,
-  useFocusTime,
-  useUpdateFocusTime,
-} from "./useFocusTimes";
+import { useCreateFocusTime, useFocusTime, useUpdateFocusTime } from "./useFocusTimes";
 import { formatDate } from "@/lib/utils";
 import { useAuth } from "@/AuthContext";
 
 export function useTimer() {
   const { user } = useAuth();
-  if (!user) return { error: "No user found" };
 
-  const { selectedTask, setSelectedTask, setIsRunning } =
-    useTaskStore();
+  const { selectedTask, setSelectedTask, isRunning, setIsRunning } = useTaskStore();
   const { data: focusTime } = useFocusTime(formatDate(new Date()));
   const createFocusTimeMutation = useCreateFocusTime();
   const updateFocusTimeMutation = useUpdateFocusTime();
   const updateTaskMutation = useUpdateTask();
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
+  const initialTimeLeft = useRef<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null); // For cleanup of intervals
   const startTime = useRef<number | null>(null); // store when start button was clicked, uses performance.now(), updates every start
 
   useEffect(() => {
     if (selectedTask) setTimeLeft(selectedTask.time_left);
-  });
+  }, [selectedTask]);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   const startTimer = async () => {
-    // might also check isRunning maybe? idk though
+    if (isRunning) {
+      toast("Timer already running");
+    }
+
     if (!selectedTask || !timeLeft) {
       toast("Please select a task");
       return;
@@ -43,16 +47,14 @@ export function useTimer() {
       });
     }
 
+    initialTimeLeft.current = selectedTask.time_left;
     startTime.current = performance.now();
     const startingTimeLeft = timeLeft; // in seconds
     setIsRunning(true);
 
     intervalRef.current = setInterval(async () => {
-      const elapsed = Math.floor(
-        (performance.now() - startTime.current!) / 1000
-      ); // in seconds
+      const elapsed = Math.floor((performance.now() - startTime.current!) / 1000); // in seconds
       const newTimeLeft = startingTimeLeft - elapsed;
-      console.log(newTimeLeft);
 
       if (newTimeLeft <= 0) {
         clearInterval(intervalRef.current!);
@@ -66,7 +68,13 @@ export function useTimer() {
         toast("Task completed!");
       } else {
         setTimeLeft(newTimeLeft);
-        setSelectedTask({ ...selectedTask, time_left: newTimeLeft });
+        const current = useTaskStore.getState().selectedTask;
+        if (current) {
+          useTaskStore.getState().setSelectedTask({
+            ...current,
+            time_left: newTimeLeft,
+          });
+        }
       }
     }, 1000);
   };
@@ -88,24 +96,24 @@ export function useTimer() {
     });
 
     const elapsed = Math.floor((performance.now() - startTime.current!) / 1000); // in seconds
+    const safeElapsed = Math.min(elapsed, initialTimeLeft.current ?? 0);
     const today = formatDate(new Date());
-    updateFocusTimeMutation.mutate;
 
     if (!focusTime) {
       createFocusTimeMutation.mutate({
         date: today,
-        user_id: user.id,
-        time: elapsed,
+        user_id: user!.id,
+        time: safeElapsed,
       });
     } else {
       updateFocusTimeMutation.mutate({
         id: focusTime.id,
         data: {
-          time: focusTime.time + elapsed,
+          time: focusTime.time + safeElapsed,
         },
       });
     }
   };
 
-  return { startTimer, pauseTimer };
+  return { startTimer, pauseTimer, timeLeft, selectedTask, isRunning, initialTimeLeft };
 }

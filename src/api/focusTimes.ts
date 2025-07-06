@@ -2,9 +2,7 @@ import { supabase } from "@/lib/supabase";
 import type { FocusTime, FocusTimeUpdate, NewFocusTime } from "@/types";
 
 export async function fetchFocusTimes(): Promise<FocusTime[]> {
-  const { data: focusTimes, error } = await supabase
-    .from("focus_times")
-    .select("*");
+  const { data: focusTimes, error } = await supabase.from("focus_times").select("*");
   if (error) throw error;
   return focusTimes ?? [];
 }
@@ -14,12 +12,12 @@ export async function fetchFocusTime(date: string): Promise<FocusTime> {
     .from("focus_times")
     .select("*")
     .eq("date", date)
-    .single();
+    .maybeSingle();
   if (error) throw error;
   return focusTime;
 }
 
-export async function createFocusTime(focusTime: NewFocusTime) {
+export async function createFocusTime(focusTime: NewFocusTime): Promise<FocusTime> {
   const { data: created, error } = await supabase
     .from("focus_times")
     .insert(focusTime)
@@ -29,13 +27,7 @@ export async function createFocusTime(focusTime: NewFocusTime) {
   return created;
 }
 
-export async function updateFocusTime({
-  id,
-  data,
-}: {
-  id: string;
-  data: FocusTimeUpdate;
-}) {
+export async function updateFocusTime({ id, data }: { id: string; data: FocusTimeUpdate }) {
   const { data: updated, error } = await supabase
     .from("focus_times")
     .update(data)
