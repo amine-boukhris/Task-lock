@@ -1,5 +1,5 @@
 import { EllipsisVertical } from "lucide-react";
-import type { Task, TaskUpdate } from "@/types";
+import type { Task, TaskUpdate } from "@/types/index";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,17 +13,22 @@ import { toast } from "sonner";
 
 interface TaskItemProps {
   task: Task;
-  onClick?: (task: Task) => void;
 }
 
-export default function TaskItem({ task, onClick }: TaskItemProps) {
+export default function TaskItem({ task }: TaskItemProps) {
   const updateTaskMutation = useUpdateTask();
   const deleteTaskMutation = useDeleteTask();
-  const { selectedTask, isRunning, setSelectedTask } = useTaskStore();
+  const { selectedTask, isRunning, setSelectedTask, removeSelectedTask } = useTaskStore();
 
   function handleCancelStatusChange() {
-    let data: TaskUpdate = {};
+    const data: TaskUpdate = {};
     if (task.status != "cancelled") {
+      if (selectedTask?.id == task.id && isRunning) {
+        return toast.info("Can't cancel running task");
+      }
+      if (selectedTask?.id == task.id) {
+        removeSelectedTask();
+      }
       data.status = "cancelled";
     } else {
       if (task.time_left == task.duration) data.status = "pending";
@@ -33,30 +38,57 @@ export default function TaskItem({ task, onClick }: TaskItemProps) {
     updateTaskMutation.mutate({ id: task.id, data });
   }
 
-  function deleteTask() {
+  function handleDelete() {
     if (isRunning && selectedTask?.id == task.id) {
       toast("Can't delete task. Task is running");
       return;
     }
 
     if (selectedTask?.id == task.id) {
-      console.log('selectedTask?.id == task.id')
-      setSelectedTask(null);
+      removeSelectedTask();
     }
 
     deleteTaskMutation.mutate(task.id);
   }
 
-  function resetTask() {
+  function handleReset() {
+    if (selectedTask?.id == task.id && isRunning) {
+      return toast.info("Task is running");
+    }
+
+    if (selectedTask?.id == task.id) {
+      setSelectedTask({...task, time_left: task.duration});
+    }
+
     updateTaskMutation.mutate({
       id: task.id,
       data: { time_left: task.duration, status: "pending" },
     });
   }
 
+  function handleClick() {
+    if (task.status == "completed" || task.status == "cancelled") {
+      return toast.info("Can't select this task");
+    }
+
+    if (isRunning) {
+      return toast.info("Timer is already running");
+    }
+
+    if (selectedTask?.id == task.id) {
+      return toast.info("Task is already selected");
+    }
+
+    setSelectedTask(task);
+  }
+
+  function handleEdit() {
+    return;
+  }
+
   return (
     <div
-      onClick={() => onClick && onClick(task)}
+      onClick={handleClick}
       className="flex items-center gap-3 px-2 py-3 border-2 border-neutral-600 text-neutral-800 rounded-xl shadow-md"
     >
       <div className="border-2 border-neutral-600  rounded-xl px-2 py-1 aspect-square flex justify-center items-center">
@@ -68,16 +100,43 @@ export default function TaskItem({ task, onClick }: TaskItemProps) {
       </div>
 
       <DropdownMenu>
-        <DropdownMenuTrigger className="outline-none">
+        <DropdownMenuTrigger className="outline-none" onClick={(e) => e.stopPropagation()}>
           <EllipsisVertical className="p-0.5 cursor-pointer size-6" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem onClick={handleCancelStatusChange}>
+        <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEdit();
+            }}
+          >
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCancelStatusChange();
+            }}
+          >
             {task.status == "cancelled" ? "Uncancel" : "Cancel"}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={deleteTask}>Delete</DropdownMenuItem>
-          <DropdownMenuItem onClick={resetTask}>Reset</DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete();
+            }}
+          >
+            Delete
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={(selectedTask?.id == task.id && isRunning) || task.duration == task.time_left}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleReset();
+            }}
+          >
+            Reset
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

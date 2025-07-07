@@ -1,12 +1,13 @@
-import type { Task } from "@/types";
+import type { Task } from "@/types/index";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 interface TaskState {
   selectedTask: Task | null;
   isRunning: boolean;
-  setSelectedTask: (taskId: Task | null) => void;
+  setSelectedTask: (taskId: Task) => void;
   setIsRunning: (state: boolean) => void;
+  removeSelectedTask: () => void;
 }
 
 export const useTaskStore = create<TaskState>()(
@@ -14,7 +15,7 @@ export const useTaskStore = create<TaskState>()(
     (set) => ({
       selectedTask: null,
       isRunning: false,
-      setSelectedTask: (task: Task | null) => {
+      setSelectedTask: (task: Task) => {
         set({
           selectedTask: task,
         });
@@ -24,12 +25,14 @@ export const useTaskStore = create<TaskState>()(
           isRunning: state,
         });
       },
+      removeSelectedTask: () => {
+        set({ selectedTask: null });
+        sessionStorage.removeItem("task-storage");
+      },
     }),
     {
       name: "task-storage",
-      partialize: (state) => ({
-        selectedTask: state.selectedTask,
-      }),
+      storage: createJSONStorage(() => sessionStorage),
     }
   )
 );

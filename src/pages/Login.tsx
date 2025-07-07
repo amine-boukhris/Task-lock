@@ -11,7 +11,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLogin } from "@/hooks/useUser";
-import { supabase } from "@/lib/supabase";
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -34,7 +33,7 @@ function Login() {
 
     loginMutation.mutate(
       { email, password },
-      { onSuccess: () => navigate("/focus"), onError: () => toast("Something went wrong") }
+      { onSuccess: () => navigate("/focus"), onError: () => toast.error("Something went wrong") }
     );
   };
 

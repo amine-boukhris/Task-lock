@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/lib/supabase";
+import { useRegister } from "@/hooks/useUser";
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -21,16 +21,20 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const registerMutation = useRegister();
+
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    let { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    if (!email || !password) {
+      toast("All fields are required");
+      return;
+    }
 
-    console.log(data, error);
-    toast("We have sent you a verification email.")
+    registerMutation.mutate(
+      { email, password },
+      { onSuccess: () => navigate("/"), onError: () => toast.error("Something went wrong") }
+    );
   };
 
   return (
@@ -38,9 +42,7 @@ function Register() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Create your account</CardTitle>
-          <CardDescription>
-            Enter your email below to create your account
-          </CardDescription>
+          <CardDescription>Enter your email below to create your account</CardDescription>
           <CardAction>
             <Button variant="link" onClick={() => navigate("/login")}>
               Login

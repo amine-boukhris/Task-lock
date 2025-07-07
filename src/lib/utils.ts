@@ -10,23 +10,28 @@ export function secondsToMM(time: number) {
 }
 
 export function secondsToMMSS(time: number) {
-  return `${Math.floor(time! / 60)}:${
-    time! % 60 < 10 ? "0" + (time! % 60) : time! % 60
-  }`;
+  return `${Math.floor(time! / 60)}:${time! % 60 < 10 ? "0" + (time! % 60) : time! % 60}`;
 }
 
 export function secondsToHHMMSS(time: number) {
   return `${
-    Math.floor(time / 3600) < 10
-      ? "0" + Math.floor(time / 3600)
-      : Math.floor(time / 3600)
+    Math.floor(time / 3600) < 10 ? "0" + Math.floor(time / 3600) : Math.floor(time / 3600)
   }:${
     Math.floor((time % 3600) / 60) < 10
       ? "0" + Math.floor((time % 3600) / 60)
       : Math.floor((time % 3600) / 60)
-  }:${
-    (time % 3600) % 60 < 10 ? "0" + ((time % 3600) % 60) : (time % 3600) % 60
-  }`;
+  }:${(time % 3600) % 60 < 10 ? "0" + ((time % 3600) % 60) : (time % 3600) % 60}`;
+}
+
+export function secondsToHHhMM(time: number) {
+  const hours = Math.floor(time / 3600)
+    .toString()
+    .padStart(2, "0");
+  const minutes = Math.floor((time % 3600) / 60)
+    .toString()
+    .padStart(2, "0");
+
+  return `${hours}h${minutes}`;
 }
 
 export function isSameDay(d1: Date, d2: Date): boolean {

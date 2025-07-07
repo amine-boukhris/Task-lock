@@ -25,7 +25,7 @@ export async function loginUser({ email, password }: AuthForm) {
 }
 
 export async function logoutUser() {
-  let { error } = await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut();
   if (error) throw error;
 }
 

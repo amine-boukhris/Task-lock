@@ -1,12 +1,11 @@
 import { Link } from "react-router";
-import { LayoutDashboard } from "lucide-react";
+import { TimerIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FocusLockLogo from "./FocusLockLogo";
-import { useAuth } from "@/AuthContext";
 import { useLogout, useUser } from "@/hooks/useUser";
 
 export default function Nav() {
-  const {user} = useUser()
+  const { data: user } = useUser();
   const logoutMutation = useLogout();
 
   function handleLogout() {
@@ -27,9 +26,9 @@ export default function Nav() {
           </Button>
         )}
 
-        <Button asChild size={"sm"} variant={"ghost"}>
-          <Link to={"/dashboard"}>
-            <LayoutDashboard />
+        <Button asChild size={"sm"}>
+          <Link to={"/focus"}>
+            <TimerIcon />
           </Link>
         </Button>
       </div>

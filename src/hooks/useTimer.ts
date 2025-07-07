@@ -4,12 +4,12 @@ import { useUpdateTask } from "./useTasks";
 import { useEffect, useRef, useState } from "react";
 import { useCreateFocusTime, useFocusTime, useUpdateFocusTime } from "./useFocusTimes";
 import { formatDate } from "@/lib/utils";
-import { useAuth } from "@/AuthContext";
+import { useUser } from "./useUser";
 
 export function useTimer() {
-  const { user } = useAuth();
+  const { data: user } = useUser();
 
-  const { selectedTask, setSelectedTask, isRunning, setIsRunning } = useTaskStore();
+  const { selectedTask, isRunning, setIsRunning } = useTaskStore();
   const { data: focusTime } = useFocusTime(formatDate(new Date()));
   const createFocusTimeMutation = useCreateFocusTime();
   const updateFocusTimeMutation = useUpdateFocusTime();
@@ -60,10 +60,19 @@ export function useTimer() {
         clearInterval(intervalRef.current!);
         setIsRunning(false);
         setTimeLeft(0);
+
         updateTaskMutation.mutate({
           id: selectedTask.id,
           data: { status: "completed", time_left: 0 },
         });
+
+        const current = useTaskStore.getState().selectedTask;
+        if (current) {
+          useTaskStore.getState().setSelectedTask({
+            ...current,
+            time_left: 0,
+          });
+        }
 
         toast("Task completed!");
       } else {
@@ -102,7 +111,7 @@ export function useTimer() {
     if (!focusTime) {
       createFocusTimeMutation.mutate({
         date: today,
-        user_id: user!.id,
+        user_id: user?.id ?? "",
         time: safeElapsed,
       });
     } else {

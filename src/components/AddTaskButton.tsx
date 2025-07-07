@@ -15,10 +15,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import type { NewTask } from "@/types";
 import { useCreateTask } from "@/hooks/useTasks";
-import { useAuth } from "@/AuthContext";
+import { useUser } from "@/hooks/useUser";
 
 export default function AddTaskButton() {
-  const { user } = useAuth();
+  const { data: user } = useUser();
   const [open, setOpen] = useState(false);
   const [newTask, setNewTask] = useState<Omit<NewTask, "user_id">>({
     title: "",
@@ -31,7 +31,12 @@ export default function AddTaskButton() {
       return;
     }
     createTaskMutation.mutate(
-      { user_id: user!.id, ...newTask },
+      {
+        user_id: user?.id ?? "",
+        title: newTask.title,
+        duration: newTask.duration * 60,
+        time_left: newTask.duration * 60,
+      },
       {
         onSuccess: () => {
           setOpen(false);

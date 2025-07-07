@@ -15,6 +15,7 @@ export default function HowItWorks() {
 
   const { scrollYProgress } = useScroll({
     target: howItWorksRef,
+    offset: ["start start", "end end"],
   });
 
   return (
@@ -25,40 +26,31 @@ export default function HowItWorks() {
   );
 }
 
-function Inspiration({
-  scrollYProgress,
-}: {
-  scrollYProgress: MotionValue<number>;
-}) {
+function Inspiration({ scrollYProgress }: { scrollYProgress: MotionValue<number> }) {
   const scale = useTransform(scrollYProgress, [0, 0.9], [0.8, 1]);
   const rotate = useTransform(scrollYProgress, [0, 0.9], [5, 0]);
   const y = useTransform(scrollYProgress, [0, 0.9], [100, 0]);
 
-  const y1 = useTransform(scrollYProgress, [0, 0.9], ["50%", "0%"])
-  const y2 = useTransform(scrollYProgress, [0, 0.9], ["100%", "0%"])
+  const y1 = useTransform(scrollYProgress, [0, 0.9], ["50%", "0%"]);
+  const y2 = useTransform(scrollYProgress, [0, 0.9], ["100%", "0%"]);
 
   return (
-    <motion.div
-      className="relative h-screen flex bg-gray-950"
-      style={{ scale, rotate, y }}
-    >
-      <motion.div className="flex-1" style={{y: y1}}>
-        <img
-          src={HowItWorksImage}
-          alt="Flow"
-          className="w-full h-full object-cover"
-        />
+    <motion.div className="relative h-screen flex bg-gray-950" style={{ scale, rotate, y }}>
+      <motion.div className="flex-1" style={{ y: y1 }}>
+        <img src={HowItWorksImage} alt="Flow" className="w-full h-full object-cover" />
       </motion.div>
-      <motion.div className="flex flex-col justify-between p-12 flex-1 bg-gray-900" style={{y: y2}}>
+      <motion.div
+        className="flex flex-col justify-between p-12 flex-1 bg-gray-900"
+        style={{ y: y2 }}
+      >
         <img src={yuiImage} className="w-32 aspect-[9/16] object-cover" />
         <div className="space-y-8">
           <h1 className="text-gray-100 text-5xl">
             Lorem ipsum dolor sit amet consectetur adipisicing.
           </h1>
           <p className="text-gray-300 text-xl max-w-[60ch]">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores
-            quos placeat eveniet rerum rem, eius necessitatibus. Esse explicabo
-            totam accusantium.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores quos placeat eveniet
+            rerum rem, eius necessitatibus. Esse explicabo totam accusantium.
           </p>
         </div>
         <div className="flex justify-between items-center">
@@ -70,11 +62,7 @@ function Inspiration({
   );
 }
 
-function StepsSection({
-  scrollYProgress,
-}: {
-  scrollYProgress: MotionValue<number>;
-}) {
+function StepsSection({ scrollYProgress }: { scrollYProgress: MotionValue<number> }) {
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.8]);
   const rotate = useTransform(scrollYProgress, [0, 1], [0, -5]);
   const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
@@ -93,13 +81,7 @@ function StepsSection({
   );
 }
 
-function StepCard({
-  step,
-  index,
-}: {
-  step: (typeof STEPS)[number];
-  index: number;
-}) {
+function StepCard({ step, index }: { step: (typeof STEPS)[number]; index: number }) {
   return (
     <motion.div
       className="bg-card text-card-foreground p-8 flex flex-col gap-8 rounded-xl"

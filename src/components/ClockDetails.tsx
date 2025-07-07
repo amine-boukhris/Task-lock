@@ -1,8 +1,8 @@
-import { useAuth } from "@/AuthContext";
+import { useUser } from "@/hooks/useUser";
 
 export default function ClockDetails() {
   const date = new Date().toDateString();
-  const { user } = useAuth();
+  const { data: user } = useUser();
 
   return (
     <div className="absolute top-6 left-6 text-left">
