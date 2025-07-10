@@ -14,7 +14,7 @@ export default function BarChart({ data, width = 600, height = 300 }: BarChartPr
   const numberOfBars = 7;
 
   return (
-    <div className="mx-auto px-3 py-5 rounded-lg bg-accent">
+    <div className="mx-auto px-3 py-5 rounded-lg bg-accent text-neutral-900 dark:text-neutral-100">
       <svg width={width} height={height}>
         {data.map((item, index) => {
           const barHeight = (item.time / maxValue) * (height - 50);
@@ -30,12 +30,12 @@ export default function BarChart({ data, width = 600, height = 300 }: BarChartPr
                 height={barHeight}
                 rx={Math.min(Math.floor(barHeight / 2), 8)}
                 ry={Math.min(Math.floor(barHeight / 2), 8)}
-                fill="blue"
+                className="fill-primary"
               />
-              <text x={x + barWidth / 2} y={height - 10} textAnchor="middle" fontSize={12}>
+              <text x={x + barWidth / 2} y={height - 10} textAnchor="middle" fontSize={12} className="fill-neutral-900 dark:fill-neutral-100">
                 {item.label.slice(0, 5)}
               </text>
-              <text x={x + barWidth / 2} y={y - 5} textAnchor="middle" fontSize="12">
+              <text x={x + barWidth / 2} y={y - 5} textAnchor="middle" fontSize="12" className="fill-neutral-900 dark:fill-neutral-100">
                 {secondsToHHhMM(item.time)}
               </text>
             </g>

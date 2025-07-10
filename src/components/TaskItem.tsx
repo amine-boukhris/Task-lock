@@ -57,7 +57,7 @@ export default function TaskItem({ task }: TaskItemProps) {
     }
 
     if (selectedTask?.id == task.id) {
-      setSelectedTask({...task, time_left: task.duration});
+      setSelectedTask({ ...task, time_left: task.duration });
     }
 
     updateTaskMutation.mutate({
@@ -89,9 +89,9 @@ export default function TaskItem({ task }: TaskItemProps) {
   return (
     <div
       onClick={handleClick}
-      className="flex items-center gap-3 px-2 py-3 border-2 border-neutral-600 text-neutral-800 rounded-xl shadow-md"
+      className="flex items-center gap-3 px-2 py-3 border-2 dark:border border-neutral-600 text-neutral-800 dark:text-neutral-200 dark:border-neutral-700 rounded-xl shadow-md"
     >
-      <div className="border-2 border-neutral-600  rounded-xl px-2 py-1 aspect-square flex justify-center items-center">
+      <div className="border-2 dark:border border-neutral-600 dark:border-neutral-700  rounded-xl px-2 py-1 aspect-square flex justify-center items-center">
         {secondsToMM(task.time_left)}
       </div>
       <div className="flex-1 space-x-1">

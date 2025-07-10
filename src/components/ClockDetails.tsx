@@ -6,8 +6,8 @@ export default function ClockDetails() {
 
   return (
     <div className="absolute top-6 left-6 text-left">
-      <p className="text-neutral-700 text-base">{date}</p>
-      <p className="text-neutral-700 text-xs">{user?.email}</p>
+      <p className="text-neutral-700 dark:text-neutral-300 text-base">{date}</p>
+      <p className="text-neutral-700 dark:text-neutral-300 text-xs">{user?.email}</p>
     </div>
   );
 }

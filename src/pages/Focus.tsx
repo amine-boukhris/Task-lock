@@ -6,6 +6,7 @@ import Timer from "@/components/Timer";
 import grain from "@/assets/bright-squares.png";
 import { useEffect } from "react";
 import Lenis from "lenis";
+import { useTheme } from "@/components/theme-provider";
 
 export default function Focus() {
   useEffect(() => {
@@ -18,13 +19,15 @@ export default function Focus() {
   }, []);
   // const { scrollYProgress } = useScroll();
 
+  const {theme} = useTheme()
+
   return (
     <div
-      className=" relative px-4 py-3 space-y-4"
-      style={{
+      className=" relative px-4 py-3 space-y-4 bg-neutral-950"
+      style={theme == 'light' ? {
         background:
           "radial-gradient(circle,rgba(225, 29, 72, 1) 0%, rgba(192, 38, 211, 1) 100%)",
-      }}
+      }: {}}
     >
       <div
         className="absolute inset-0 m-0 z-0 opacity-100 pointer-events-none mix-blend-overlay"

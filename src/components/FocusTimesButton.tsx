@@ -41,9 +41,9 @@ export default function FocusTimesButton() {
       <DrawerTrigger asChild>
         <Button
           variant={"outline"}
-          className="cursor-pointer p-1.5 hover:*:text-primary"
+          className="cursor-pointer p-1.5"
         >
-          <LayoutDashboard className=" text-black box-content" />
+          <LayoutDashboard className="box-content" />
         </Button>
       </DrawerTrigger>
       <DrawerContent className="flex flex-col pb-12 pt-3">

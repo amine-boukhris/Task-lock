@@ -14,7 +14,7 @@ export default function ClockProgressBar({
   return (
     <div
       className={cn(
-        "w-[500px] rounded-full h-2 bg-neutral-300 relative",
+        "w-[500px] rounded-full h-2 bg-neutral-300 dark:bg-neutral-600 relative",
         className
       )}
     >

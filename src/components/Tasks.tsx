@@ -11,30 +11,30 @@ export default function Tasks() {
   const cancelledTasks = tasks?.filter((task) => task.status == "cancelled");
 
   return (
-    <div className="relative border-2 border-neutral-800 px-6 py-6 max-w-6xl mx-auto rounded-xl bg-neutral-50 aspect-video">
+    <div className="relative border-2 border-neutral-800 dark:border dark:border-neutral-700 px-6 py-6 max-w-6xl mx-auto rounded-xl bg-neutral-50 dark:bg-neutral-900 aspect-video">
       <div className="w-1/2 mx-auto space-y-8">
         <div className="space-y-3">
-          <h2 className="text-2xl text-neutral-700">Active Tasks</h2>
+          <h2 className="text-2xl text-neutral-700 dark:text-neutral-300">Active Tasks</h2>
           {!mainTasks?.length && (
-            <p className="text-neutral-600">you don't have any completed tasks</p>
+            <p className="text-neutral-600 dark:text-neutral-400">you don't have any completed tasks</p>
           )}
           {mainTasks?.map((task) => (
             <TaskItem key={task.id} task={task} />
           ))}
         </div>
         <div className="space-y-3">
-          <h2 className="text-2xl text-neutral-700">Completed</h2>
+          <h2 className="text-2xl text-neutral-700 dark:text-neutral-300">Completed</h2>
           {!completedTasks?.length && (
-            <p className="text-neutral-600">you don't have any completed tasks</p>
+            <p className="text-neutral-600 dark:text-neutral-400">you don't have any completed tasks</p>
           )}
           {completedTasks?.map((task) => (
             <TaskItem key={task.id} task={task} />
           ))}
         </div>
         <div className="space-y-3">
-          <h2 className="text-2xl text-neutral-700">Cancelled</h2>
+          <h2 className="text-2xl text-neutral-700 dark:text-neutral-300">Cancelled</h2>
           {!cancelledTasks?.length && (
-            <p className="text-neutral-600">you don't have any cancelled tasks</p>
+            <p className="text-neutral-600 dark:text-neutral-400">you don't have any cancelled tasks</p>
           )}
           {cancelledTasks?.map((task) => (
             <TaskItem key={task.id} task={task} />

@@ -3,11 +3,14 @@ import HowItWorksImage from "../assets/HowItWorksImage.jpg";
 import yuiImage from "../assets/yui.jpg";
 import { BadgeCheck } from "lucide-react";
 import { useRef } from "react";
+import step1 from '../assets/step1.png'
+import step2 from '../assets/step2.png'
+import step3 from '../assets/step3.png'
 
 const STEPS = [
-  { title: "Create tasks", img: "https://placehold.co/300x200" },
-  { title: "Lock in & focus", img: "https://placehold.co/300x200" },
-  { title: "Track your time", img: "https://placehold.co/300x200" },
+  { title: "Create tasks", img: step1 },
+  { title: "Lock in & focus", img: step2 },
+  { title: "Track your time", img: step3 },
 ] as const;
 
 export default function HowItWorks() {
@@ -43,7 +46,7 @@ function Inspiration({ scrollYProgress }: { scrollYProgress: MotionValue<number>
         className="flex flex-col justify-between p-12 flex-1 bg-gray-900"
         style={{ y: y2 }}
       >
-        <img src={yuiImage} className="w-32 aspect-[9/16] object-cover" />
+        <motion.img src={yuiImage} className="w-32 aspect-[9/16] object-cover" style={{y: y2}} />
         <div className="space-y-8">
           <h1 className="text-gray-100 text-5xl">
             Lorem ipsum dolor sit amet consectetur adipisicing.
@@ -53,9 +56,9 @@ function Inspiration({ scrollYProgress }: { scrollYProgress: MotionValue<number>
             rerum rem, eius necessitatibus. Esse explicabo totam accusantium.
           </p>
         </div>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-end">
           <span className="text-gray-400 text-lg">Lorem, ipsum.</span>
-          <BadgeCheck className="text-gray-200 size-8" />
+          <BadgeCheck className="text-gray-300 size-16 animate-spin" style={{animationDuration: '5s'}} />
         </div>
       </motion.div>
     </motion.div>
@@ -84,7 +87,7 @@ function StepsSection({ scrollYProgress }: { scrollYProgress: MotionValue<number
 function StepCard({ step, index }: { step: (typeof STEPS)[number]; index: number }) {
   return (
     <motion.div
-      className="bg-card text-card-foreground p-8 flex flex-col gap-8 rounded-xl"
+      className="bg-card text-card-foreground p-8 flex flex-col gap-8 rounded-xl max-w-md"
       initial={{ y: "100%", opacity: 0 }}
       whileInView={{ y: "0%", opacity: 1 }}
       viewport={{ amount: "some", margin: "25%", once: true }}

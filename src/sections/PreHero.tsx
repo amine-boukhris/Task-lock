@@ -1,6 +1,7 @@
 import { motion, MotionValue, useMotionTemplate, useScroll, useTransform } from "framer-motion";
 import centerImage from "../assets/centerImage.jpg";
 import { useRef } from "react";
+import { cn } from "@/lib/utils";
 
 export default function PreHero() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -9,13 +10,11 @@ export default function PreHero() {
   });
 
   return (
-    <section>
-      <div ref={sectionRef} className="relative w-full h-[200vh]">
-        <CenterImage scrollYProgress={scrollYProgress} />
-        <SplitText scrollYProgress={scrollYProgress} />
-        <div className="absolute bottom-0 left-0 right-0 h-96 bg-gradient-to-b from-zinc-950/0 to-zinc-950" />
-      </div>
-    </section>
+    <div ref={sectionRef} className="relative w-full h-[200vh]">
+      <CenterImage scrollYProgress={scrollYProgress} />
+      <SplitText scrollYProgress={scrollYProgress} />
+      <div className="absolute bottom-0 left-0 right-0 h-96 bg-gradient-to-b from-zinc-950/0 to-zinc-950" />
+    </div>
   );
 }
 
@@ -24,7 +23,7 @@ function SplitText({ scrollYProgress }: { scrollYProgress: MotionValue }) {
 
   return (
     <div className="absolute top-[100px] left-1/2 -translate-x-1/2 z-50  overflow-hidden">
-      {"StartFocusingToday".split("").map((c, i) => (
+      {"Start Focusing Today".split("").map((c, i) => (
         <motion.span
           key={i}
           initial={{ y: "100%" }}
@@ -35,7 +34,9 @@ function SplitText({ scrollYProgress }: { scrollYProgress: MotionValue }) {
             type: "spring",
           }}
           viewport={{ once: true }}
-          className="inline-block text-gray-100 text-6xl font-bold"
+          className={cn("inline-block font-bold text-gray-100 text-6xl", {
+            "ml-[0.8ch]": c == " ",
+          })}
           style={{
             lineHeight: 1.2,
             opacity,
